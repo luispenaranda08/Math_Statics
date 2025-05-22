@@ -53,5 +53,5 @@ cat("Intervalo de confianza usando ICmedianosigma (sigma desconocido):\n")
 cat("Límite inferior:", ic_sin_sigma[1], "\n")
 cat("Límite superior:", ic_sin_sigma[2], "\n")
 
-Punto2: 
+
 
