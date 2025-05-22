@@ -1,0 +1,48 @@
+# 1. Cargar funciones
+source("funcionesIC.R")
+
+# 2. s
+mujeres <- dataset$age[dataset$gender == 1]  
+hombres <- dataset$age[dataset$gender == 2]   
+
+# Verificamos que hayan datos suficientes
+if(length(mujeres) < 50 | length(hombres) < 60) {
+  stop("No hay suficientes datos para los tamaños muestrales requeridos")
+}
+
+# Calculamos parámetros poblacionales
+mu_mujeres <- mean(mujeres, na.rm = TRUE)
+mu_hombres <- mean(hombres, na.rm = TRUE)
+sigma_mujeres <- sd(mujeres, na.rm = TRUE)
+sigma_hombres <- sd(hombres, na.rm = TRUE)
+
+# 3. Generamos las muestras aleatorias
+set.seed(123)
+muestra_mujeres <- sample(mujeres, 50)
+muestra_hombres <- sample(hombres, 60)
+
+# 4. Calcular IC para diferencia de medias
+ic_diferencia <- iediferenciamedias(muestra_mujeres, muestra_hombres, 
+                                    sigma_mujeres, sigma_hombres)
+
+# 5. Evaluar diferencia significativa
+diferencia_medias <- mean(muestra_mujeres) - mean(muestra_hombres)
+
+if(ic_diferencia[1] > 0) {
+  resultado <- "MUJERES"
+} else if(ic_diferencia[2] < 0) {
+  resultado <- "HOMBRES"
+} else {
+  resultado <- "INDETERMINADO"
+}
+
+# Resultados
+cat("------------------------------------------------\n")
+cat("Media mujeres:", round(mu_mujeres, 2), "\n")
+cat("Media hombres:", round(mu_hombres, 2), "\n")
+cat("Diferencia de medias (mujeres - hombres):", round(diferencia_medias, 2), "\n")
+cat("Intervalo de confianza 95% para la diferencia: [", 
+    round(ic_diferencia[1], 2), ",", round(ic_diferencia[2], 2), "]\n")
+cat("Resultado:", resultado, "\n")
+cat("------------------------------------------------\n")
+
