@@ -1,0 +1,50 @@
+# Función para calcular intervalo de confianza de la media con sigma conocido
+ICmedia <- function(x, sigma) {
+  n <- length(x)
+  xbar <- mean(x)
+  error_estandar <- sigma / sqrt(n)
+  margen_error <- qnorm(0.975) * error_estandar  # Para 95% de confianza
+  
+  limite_inferior <- xbar - margen_error
+  limite_superior <- xbar + margen_error
+  
+  return(c(limite_inferior, limite_superior))
+}
+
+# Función para calcular intervalo de confianza de la media con sigma desconocido
+ICmedianosigma <- function(x) {
+  n <- length(x)
+  xbar <- mean(x)
+  s <- sd(x)  # Desviación estándar muestral
+  error_estandar <- s / sqrt(n)
+  margen_error <- qt(0.975, df = n-1) * error_estandar  # Usando t-student
+  
+  limite_inferior <- xbar - margen_error
+  limite_superior <- xbar + margen_error
+  
+  return(c(limite_inferior, limite_superior))
+}
+
+# Función para intervalo de confianza de diferencia de medias (sigma conocido)
+iediferenciamedias <- function(x, y, sigma_x, sigma_y) {
+  n_x <- length(x)
+  n_y <- length(y)
+  xbar <- mean(x)
+  ybar <- mean(y)
+  
+  # Calcular error estándar de la diferencia
+  error_estandar <- sqrt((sigma_x^2/n_x) + (sigma_y^2/n_y))
+  
+  # Calcular margen de error (Z para 95% de confianza)
+  margen_error <- qnorm(0.975) * error_estandar
+  
+  # Diferencia de medias
+  diferencia <- xbar - ybar
+  
+  # Límites del intervalo
+  limite_inferior <- diferencia - margen_error
+  limite_superior <- diferencia + margen_error
+  
+  return(c(limite_inferior, limite_superior))
+}
+
