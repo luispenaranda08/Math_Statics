@@ -1,0 +1,57 @@
+# Cargar el dataset
+dataset <- read.csv("dataset.csv")  
+print(dataset)
+
+# Punto 1.1 - Calculamos la media poblacional y desviación estándar de 'edad'
+mu <- mean(dataset$age, na.rm = TRUE)
+sigma <- sd(dataset$age, na.rm = TRUE)
+
+cat("Media poblacional (μ) de edad:", mu, "\n")
+cat("Desviación estándar poblacional (σ) de edad:", sigma, "\n\n")
+
+# Punto 1.2 - Crear muestra aleatoria de tamaño n=20 de 'edad'
+set.seed(123)  # Para reproducibilidad
+edades <- na.omit(dataset$age)  # Limpiamos los NA
+x <- sample(edades, 20)  #Muestreamos
+
+cat("Muestra aleatoria (x) de edad (n=20):\n")
+print(x)
+cat("\n")
+
+# Punto 1.3 - Calculamos la media muestral y longitud
+xbar <- mean(x)
+n <- length(x)
+
+cat("Media muestral (x̄):", xbar, "\n")
+cat("Tamaño de la muestra (n):", n, "\n\n")
+
+# Punto 1.4 - Calcular intervalo de confianza manualmente
+error_estandar <- sigma / sqrt(n)
+margen_error <- qnorm(0.975) * error_estandar
+lim_inf <- xbar - margen_error
+lim_sup <- xbar + margen_error
+
+cat("Intervalo de confianza (95%) calculado manualmente:\n")
+cat("Límite inferior:", lim_inf, "\n")
+cat("Límite superior:", lim_sup, "\n\n")
+
+# Punto 1.5 y 1.6 - La función ICmedia ya está creada en funcionesIC.R
+
+# Punto 1.7 - Calcular IC usando la función ICmedia
+source("funcionesIC.R") 
+
+ic_con_sigma <- ICmedia(x, sigma)
+cat("Intervalo de confianza usando ICmedia (sigma conocido):\n")
+cat("Límite inferior:", ic_con_sigma[1], "\n")
+cat("Límite superior:", ic_con_sigma[2], "\n\n")
+
+# Punto 1.8 - La función ICmedianosigma ya está creada en funcionesIC.R
+
+# Punto 1.9 - Calcular IC usando la función ICmedianosigma
+ic_sin_sigma <- ICmedianosigma(x)
+cat("Intervalo de confianza usando ICmedianosigma (sigma desconocido):\n")
+cat("Límite inferior:", ic_sin_sigma[1], "\n")
+cat("Límite superior:", ic_sin_sigma[2], "\n")
+
+Punto2: 
+
