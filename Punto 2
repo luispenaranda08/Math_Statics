@@ -1,0 +1,55 @@
+# Cargar librerías necesarias
+library(ggplot2)
+
+# 1. Generar 1000 muestras de tamaño n=20
+set.seed(123)
+muestras <- replicate(1000, sample(na.omit(dataset$age), 20), simplify = FALSE)
+
+# 2. Calcular media poblacional
+mu <- mean(dataset$age, na.rm = TRUE)
+sigma <- sd(dataset$age, na.rm = TRUE)
+
+# 3. Función ICmediaS como se solicita
+ICmediaS <- function(x, sigma) {
+  n <- length(x)
+  xbar <- mean(x)
+  error_estandar <- sigma / sqrt(n)
+  margen_error <- qnorm(0.975) * error_estandar
+  c(limite_inferior = xbar - margen_error, limite_superior = xbar + margen_error)
+}
+
+# 4. Calcular IC para cada muestra
+resultados <- lapply(muestras, function(x) {
+  ic <- ICmediaS(x, sigma)
+  data.frame(
+    media_muestral = mean(x),
+    lim_inf = ic["limite_inferior"],
+    lim_sup = ic["limite_superior"],
+    contiene_mu = (ic["limite_inferior"] <= mu & mu <= ic["limite_superior"])
+  )
+})
+
+# 5. Combinar resultados
+df_resultados <- do.call(rbind, resultados)
+
+# 6. Gráfico 
+ggplot(df_resultados, aes(x = seq_len(nrow(df_resultados)), y = media_muestral, 
+                          color = ifelse(contiene_mu, "Contiene μ", "No contiene μ"))) +
+  geom_point(alpha = 0.6) +
+  geom_hline(yintercept = mu, linetype = "dashed", color = "black") +
+  scale_color_manual(values = c("Contiene μ" = "blue", "No contiene μ" = "red")) +
+  labs(title = "Medias muestrales de 1000 muestras (n=20)",
+       subtitle = paste("Línea negra = Media poblacional (μ =", round(mu, 2), ")"),
+       x = "Número de muestra",
+       y = "Media muestral",
+       color = "Intervalo de Confianza") +
+  theme_minimal()
+
+# 7. Probabilidad empírica
+prob_empirica <- mean(df_resultados$contiene_mu)
+cat("------------------------------------------------\n")
+cat("Probabilidad empírica de contener μ:", round(prob_empirica, 4), "\n")
+cat("Proporción esperada teóricamente: 0.95\n")
+cat("Número de intervalos que no contienen μ:", sum(!df_resultados$contiene_mu), "/1000\n")
+cat("------------------------------------------------\n")
+
